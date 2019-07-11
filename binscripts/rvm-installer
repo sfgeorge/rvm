@@ -27,6 +27,7 @@ rvm_install_initialize()
 
 log()  { printf "%b\n" "$*"; }
 debug(){ [[ ${rvm_debug_flag:-0} -eq 0 ]] || printf "%b\n" "$*" >&2; }
+notice() { log "$*" >&2 ; }
 fail() { log "\nERROR: $*\n" >&2 ; exit 1 ; }
 fail_with_code() { code="$1" ; shift ; log "\nERROR: $*\n" >&2 ; exit "$code" ; }
 
@@ -264,7 +265,7 @@ fetch_version()
 # Returns a sorted list of most recent tags from a repository
 fetch_versions()
 {
-  typeset _account _domain _repo _url _stdout _stderr
+  typeset _account _domain _repo _url
   _domain=$1
   _account=$2
   _repo=$3
@@ -280,11 +281,9 @@ fetch_versions()
       _url=https://${_domain}/api/v3/repos/${_account}/${_repo}/tags
       ;;
   esac
-
-  _stderr=${ { _stdout=$(__rvm_curl -sS "${_url}") ; } 2>&1; } ||
-    log "Fetching $_url has failed with code $? ($_stderr)"
-
-  \awk -v RS=',|values":' -v FS='"' '$2=="name"&&$4!="rvm"{print $4}' <<< "$_stdout" |
+  notice "Fetching ${_url}"
+  __rvm_curl -sS "${_url}" |
+    \awk -v RS=',|values":' -v FS='"' '$2=="name"&&$4!="rvm"{print $4}' |
     sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n
 }
 
