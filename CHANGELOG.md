@@ -14,7 +14,7 @@
 * Fix fetching RVM tags from Bitbucket [\#4728](https://github.com/rvm/rvm/pull/4728)
 
 #### Changes
-* Installer now reports which URL it is using to fetch the version information and when version fetching has completely failed [\#4728](https://github.com/rvm/rvm/pull/4728)
+* Installer now reports which URL(s) have failed to fetch version information and when version fetching has completely failed [\#4728](https://github.com/rvm/rvm/pull/4728)
 
 #### Binaries:
 *
