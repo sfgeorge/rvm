@@ -265,7 +265,7 @@ fetch_version()
 # Returns a sorted list of most recent tags from a repository
 fetch_versions()
 {
-  typeset _account _domain _repo _url
+  typeset _account _domain _repo _url _last_error_file
   _domain=$1
   _account=$2
   _repo=$3
@@ -282,9 +282,11 @@ fetch_versions()
       ;;
   esac
 
-  { __rvm_curl -sS "${_url}" || warn "...the preceeding error with code $? occurred while fetching $_url" ; } |
+  _last_error_file="$rvm_archives_path/last-error.txt"
+  { __rvm_curl -sS "${_url}" 2> "$_last_error_file" || warn "Fetching $_url has failed with code $? ($(<$_last_error_file))" ; } |
     \awk -v RS=',|values":' -v FS='"' '$2=="name"&&$4!="rvm"{print $4}' |
     sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n
+  \rm "$_last_error_file"
 }
 
 install_release()
